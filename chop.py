@@ -6,6 +6,13 @@ import statistics as stat
 import math
 import os
 
+# from predict import get_model_api
+# attention_ocr = get_model_api()
+
+# image_line = cv2.imread('image.jpg',0)
+# out_text = attention_ocr(image_line)
+
+
 def illumination_correction(image):
     _structure = cv2.getStructuringElement(cv2.MORPH_RECT,(25,15))
     image = cv2.morphologyEx(image,cv2.MORPH_BLACKHAT,_structure)
@@ -65,6 +72,7 @@ def chop(img_for_ocr):
     if w > 350:
         line_segments = get_lines_segments(img_for_ocr)
         for j, _line in enumerate(line_segments):
+            out_txt = 
             cv2.imwrite('tmp/{}_{}.jpg'.format(i, j), _line)
 
 
