@@ -7,16 +7,12 @@ import cv2
 import copy
 import time
 from glob import glob
-from skimage.filters import threshold_mean
 
 from random import shuffle, randint
 
 import tensorflow as tf
 from six import b
 
-
-
-font_database_ben = []
 font_database_eng = []
 backgrounds = []
 
@@ -62,15 +58,7 @@ def create_tfrecord_data(generated_images, out_file):
     writer.close()
 
 def initiate_fonts():
-    global font_database_ben, font_database_eng
-    fonts = glob('fonts\\ben\\*.ttf')
-    for _font in fonts:
-        font_id = QFontDatabase.addApplicationFont(_font)
-        family = QFontDatabase.applicationFontFamilies(font_id)
-        monospace = QFont(family[0])
-        monospace.setPixelSize(36)
-        fm = QFontMetrics(monospace)
-        font_database_ben.append([fm, monospace])
+    global font_database_eng
 
     fonts = glob('fonts\\eng\\*.ttf')
     for _font in fonts:
@@ -189,9 +177,9 @@ def resize_randomly(image):
     #     image[image > 220] = back_val
         
 
-    add_f_background = randint(0,7)
-    if add_f_background == 1:
-        image = cv2.bitwise_not(image)
+    # add_f_background = randint(0,7)
+    # if add_f_background == 1:
+    #     image = cv2.bitwise_not(image)
         # w,h,c = image.shape
         # background_id = randint(0, len(backgrounds)-1)
         # background_image = backgrounds[background_id]
@@ -256,15 +244,11 @@ def resize_randomly(image):
     return image
 
 
-def image_to_text(text_lines_ben, text_lines_eng):
+def image_to_text(text_lines_eng):
 
-    shuffle(text_lines_ben)
     shuffle(text_lines_eng)
-    text_lines_ben = text_lines_ben[:]
     text_lines_eng = text_lines_eng[:]
     text_lines = []
-    bengali_lines_end_at = len(text_lines_ben)
-    text_lines.extend(text_lines_ben)
     text_lines.extend(text_lines_eng)
     generated_images = []
     counter = 0
@@ -273,79 +257,77 @@ def image_to_text(text_lines_ben, text_lines_eng):
     max_char_in_line = 0
     max_char_line_no = 0
     image_length_limit_cross = 0
-    font_database = [font_database_ben, font_database_eng]
-    # shuffle(text_lines)
+    font_database = [font_database_eng]
+    shuffle(text_lines)
     font_db_id = 0
-    # for line in text_lines:
-    #     counter += 1
-    #     # if counter == 40000:
-    #     #     break
-    #     if counter > bengali_lines_end_at:
-    #         font_db_id = 1
+    for line in text_lines:
+        counter += 1
+        if counter == 40:
+            break
 
-    #     add_rand_space = (0,15)
-    #     if add_rand_space == 8:
-    #         _times = randint(1,3)
-    #         space_counts = ['  ', '    ', '      ']
-    #         _space_c = randint(0,2)
-    #         line = line.replace(' ', space_counts[_space_c], _times)
-    #     for x in range(1):
-    #         current_font_id = randint(0,len(font_database[font_db_id]) - 1)
-    #         fm, monospace = font_database[font_db_id][current_font_id][0], font_database[font_db_id][current_font_id][1]
-    #         _set_bold = randint(0,3)
-    #         if _set_bold == 2:
-    #             monospace.setBold(True)
-    #         line = line.replace('\n','')
-    #         width=fm.width(line)
-    #         height=fm.height()
-    #         if width < 2 or height < 2:
-    #             print('image is not generated at line', counter)
-    #             width, height = randint(50, 350), 32
-    #             line = ''
-    #         pix = QPixmap(width,height)
-    #         _back_color = 255
-    #         pix.fill(QColor(_back_color,_back_color,_back_color))
-    #         painter = QPainter(pix)
-    #         _from = randint(0,50)
-    #         _color = randint(_from,150)
-    #         if _color >= _back_color:
-    #             _color = 50
-    #         painter.setBrush(QColor(_color,_color,_color))
-    #         painter.setFont( monospace )
-    #         _rect = QRect(0,0,width,height)
-    #         painter.drawText(_rect, Qt.AlignVCenter | Qt.AlignHCenter, line)
-    #         painter.end()
-    #         np_arr = qt_pixmap_to_numpy_array(pix)
-    #         if counter_randomize % 3 != 0:
-    #             np_arr = resize_randomly(np_arr)
-    #         h, w, c = np_arr.shape
-    #         if h != 32:
-    #             new_width = int((32 * w)/h) + 1
-    #             if new_width > max_length_of_line:
-    #                 max_length_of_line = new_width
-    #             if new_width > 350 or len(line) > 34:
-    #                 image_length_limit_cross += 1
-    #                 continue
-    #             np_arr = cv2.resize(np_arr,(new_width,32))
-    #         # np_arr = cv2.cvtColor(np_arr, cv2.COLOR_BGR2GRAY)
-    #         if len(line) > max_char_in_line:
-    #             max_char_in_line = len(line)
-    #             max_char_line_no = counter
-    #         generated_images.append([np_arr,line])
-    #         # print('counter {} font {}'.format(counter_randomize,monospace.family()))
-    #         counter_randomize += 1
+        add_rand_space = randint(0,15)
+        if add_rand_space == 8:
+            _times = randint(1,3)
+            space_counts = ['  ', '    ', '      ']
+            _space_c = randint(0,2)
+            line = line.replace(' ', space_counts[_space_c], _times)
+        for x in range(10):
+            current_font_id = randint(0,len(font_database[font_db_id]) - 1)
+            fm, monospace = font_database[font_db_id][current_font_id][0], font_database[font_db_id][current_font_id][1]
+            _set_bold = randint(0,3)
+            if _set_bold == 2:
+                monospace.setBold(True)
+            line = line.replace('\n','')
+            width=fm.width(line)
+            height=fm.height()
+            if width < 2 or height < 2:
+                print('image is not generated at line', counter)
+                width, height = randint(50, 350), 32
+                line = ''
+            pix = QPixmap(width,height)
+            _back_color = 255
+            pix.fill(QColor(_back_color,_back_color,_back_color))
+            painter = QPainter(pix)
+            _from = randint(0,50)
+            _color = randint(_from,150)
+            if _color >= _back_color:
+                _color = 50
+            painter.setBrush(QColor(_color,_color,_color))
+            painter.setFont( monospace )
+            _rect = QRect(0,0,width,height)
+            painter.drawText(_rect, Qt.AlignVCenter | Qt.AlignHCenter, line)
+            painter.end()
+            np_arr = qt_pixmap_to_numpy_array(pix)
+            if counter_randomize % 3 != 0:
+                np_arr = resize_randomly(np_arr)
+            h, w, c = np_arr.shape
+            if h != 32:
+                new_width = int((32 * w)/h) + 1
+                if new_width > max_length_of_line:
+                    max_length_of_line = new_width
+                if new_width > 350 or len(line) > 34:
+                    image_length_limit_cross += 1
+                    continue
+                np_arr = cv2.resize(np_arr,(new_width,32))
+            # np_arr = cv2.cvtColor(np_arr, cv2.COLOR_BGR2GRAY)
+            if len(line) > max_char_in_line:
+                max_char_in_line = len(line)
+                max_char_line_no = counter
+            generated_images.append([np_arr,line])
+            # print('counter {} font {}'.format(counter_randomize,monospace.family()))
+            counter_randomize += 1
 
 
-    # # for i, value in enumerate(generated_images):
-    # #     cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
+    for i, value in enumerate(generated_images):
+        cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
 
     # shuffle(generated_images)
     # shuffle(generated_images)
     # data_split = int((len(generated_images) * .8))
-    dataset_ = read_dataset('datasets/dataset2',',')
-    generated_images.extend(dataset_)
-    dataset_ = read_dataset('datasets/dataset1')
-    generated_images.extend(dataset_)
+    # dataset_ = read_dataset('datasets/dataset2',',')
+    # generated_images.extend(dataset_)
+    # dataset_ = read_dataset('datasets/dataset1')
+    # generated_images.extend(dataset_)
     # dataset_ = read_dataset('datasets/dataset3')
     # generated_images.extend(dataset_)
     # shuffle(generated_images)
@@ -355,7 +337,7 @@ def image_to_text(text_lines_ben, text_lines_eng):
     # create_tfrecord_data(generated_images, './train_data/testing_all.tfrecords')
 
 
-    print('train data count : {} \ntest data count : {}'.format(len(generated_images[20000:]),20000))
+    print('train data count : {} \n'.format(len(generated_images)))
     print('max char in line {} at line no {}'.format(max_char_in_line, max_char_line_no))
     print('max image width {}'.format(max_length_of_line))
     print('over width data count: {}'.format(image_length_limit_cross))
@@ -465,18 +447,15 @@ if __name__ == '__main__':
     qInstallMessageHandler(handle_qt_debug_message)
     
     start = time.time()
-    text_file_object_b = open('train_data/out_ben.txt','r', encoding='utf-8')
-    text_lines_ben = text_file_object_b.readlines()
     text_file_object_e = open('train_data/out_eng.txt','r', encoding='utf-8')
     text_lines_eng = text_file_object_e.readlines()
 
-    shuffle(text_lines_ben)
     shuffle(text_lines_eng)
     # fonts = glob('fonts\\ben\\*.ttf')
     # fonts.extend(glob('fonts\\ben\\*.ttf'))
     initiate_fonts()
-    initiate_backgrounds()
-    image_to_text(text_lines_ben, text_lines_eng)
+    # initiate_backgrounds()
+    image_to_text(text_lines_eng)
 
     end = time.time()
     total = end - start
