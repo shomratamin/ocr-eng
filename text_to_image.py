@@ -262,7 +262,7 @@ def image_to_text(text_lines_eng):
     font_db_id = 0
     for line in text_lines:
         counter += 1
-        if counter == 40:
+        if counter == 4:
             break
 
         add_rand_space = randint(0,15)

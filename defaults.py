@@ -27,7 +27,7 @@ class Config(object):
     # Optimization
     NUM_EPOCH = 10
     BATCH_SIZE = 64
-    INITIAL_LEARNING_RATE = 0.1
+    INITIAL_LEARNING_RATE = 0.5
 
     # Network parameters
     CLIP_GRADIENTS = True  # whether to perform gradient clipping
