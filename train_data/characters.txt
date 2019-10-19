@@ -1,1 +1,1 @@
- "#&'()*,-./0123456789:;?ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]_abcdefghijklmnopqrstuvwxyz{}ʼ
+ "#&'()*,-./0123456789:;ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]_abcdefghijklmnopqrstuvwxyz{}ʼ

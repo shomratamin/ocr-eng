@@ -244,7 +244,15 @@ def resize_randomly(image):
     return image
 
 
-def image_to_text(text_lines_eng):
+def image_to_text(text_lines_eng_raw):
+    max_line_length = 36
+    text_lines_eng = []
+    for line in text_lines_eng_raw:
+        if len(line) > max_line_length:
+            line_segements = chop_line(line,max_line_length)
+            text_lines_eng.extend(line_segements)
+        else:
+            text_lines_eng.append(line)
 
     shuffle(text_lines_eng)
     text_lines_eng = text_lines_eng[:]
@@ -262,8 +270,8 @@ def image_to_text(text_lines_eng):
     font_db_id = 0
     for line in text_lines:
         counter += 1
-        if counter == 4:
-            break
+        # if counter == 50:
+        #     break
 
         add_rand_space = randint(0,15)
         if add_rand_space == 8:
@@ -271,13 +279,16 @@ def image_to_text(text_lines_eng):
             space_counts = ['  ', '    ', '      ']
             _space_c = randint(0,2)
             line = line.replace(' ', space_counts[_space_c], _times)
-        for x in range(10):
+        for x in range(5):
             current_font_id = randint(0,len(font_database[font_db_id]) - 1)
             fm, monospace = font_database[font_db_id][current_font_id][0], font_database[font_db_id][current_font_id][1]
             _set_bold = randint(0,3)
             if _set_bold == 2:
                 monospace.setBold(True)
             line = line.replace('\n','')
+            if len(line) > 35:
+                # print('not generating at', counter)
+                continue
             width=fm.width(line)
             height=fm.height()
             if width < 2 or height < 2:
@@ -318,15 +329,15 @@ def image_to_text(text_lines_eng):
             counter_randomize += 1
 
 
-    for i, value in enumerate(generated_images):
-        cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
+    # for i, value in enumerate(generated_images):
+    #     cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
 
     # shuffle(generated_images)
     # shuffle(generated_images)
     # data_split = int((len(generated_images) * .8))
     # dataset_ = read_dataset('datasets/dataset2',',')
     # generated_images.extend(dataset_)
-    # dataset_ = read_dataset('datasets/dataset1')
+    # generated_images = read_dataset('datasets/dataset1')
     # generated_images.extend(dataset_)
     # dataset_ = read_dataset('datasets/dataset3')
     # generated_images.extend(dataset_)
@@ -386,6 +397,18 @@ def get_image_labels():
                 print(line)
 
     return generated_data
+
+def chop_line(line_text, max_length=36):
+    line_segments = []
+    _line = []
+    for i,c in enumerate(line_text):
+        if i > 0 and i % (max_length -1) == 0:
+            _line_txt = ''.join(_line)
+            line_segments.append(_line_txt)
+            _line = []
+        _line.append(c)
+    return line_segments
+
 
 def read_dataset(folder, separator=':', annot_file='annot.txt'):
     lines = []
@@ -447,7 +470,7 @@ if __name__ == '__main__':
     qInstallMessageHandler(handle_qt_debug_message)
     
     start = time.time()
-    text_file_object_e = open('train_data/out_eng.txt','r', encoding='utf-8')
+    text_file_object_e = open('train_data/cleaned.txt','r', encoding='utf-8')
     text_lines_eng = text_file_object_e.readlines()
 
     shuffle(text_lines_eng)

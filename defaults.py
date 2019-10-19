@@ -25,7 +25,7 @@ class Config(object):
     FULL_ASCII = False
 
     # Optimization
-    NUM_EPOCH = 10
+    NUM_EPOCH = 3
     BATCH_SIZE = 64
     INITIAL_LEARNING_RATE = 0.5
 
@@ -38,7 +38,7 @@ class Config(object):
     # (Encoder number of hidden units will be ATTN_NUM_HIDDEN*ATTN_NUM_LAYERS)
     LOAD_MODEL = True
     OLD_MODEL_VERSION = False
-    TARGET_VOCAB_SIZE = 87  # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
+    TARGET_VOCAB_SIZE = 86  # 0: PADDING, 1: GO, 2: EOS, >2: 0-9, a-z
     CHANNELS = 1  # number of color channels from source image (1 = grayscale, 3 = rgb)
 
     MAX_WIDTH = 350
