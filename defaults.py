@@ -25,9 +25,9 @@ class Config(object):
     FULL_ASCII = False
 
     # Optimization
-    NUM_EPOCH = 3
-    BATCH_SIZE = 64
-    INITIAL_LEARNING_RATE = 0.5
+    NUM_EPOCH = 50
+    BATCH_SIZE = 256
+    INITIAL_LEARNING_RATE = 1.0
 
     # Network parameters
     CLIP_GRADIENTS = True  # whether to perform gradient clipping
