@@ -89,23 +89,23 @@ def add_random_noise(image):
         gauss = gauss.reshape(row,col,ch)
         noisy = image + gauss
         return noisy
-    elif noise_typ == 1:
-        row,col,ch = image.shape
-        s_vs_p = 0.5
-        amount = 0.04
-        out = np.copy(image)
-        # Salt mode
-        num_salt = np.ceil(amount * image.size * s_vs_p)
-        coords = [np.random.randint(0, i - 1, int(num_salt))
-                for i in image.shape]
-        out[coords] = 1
+    # elif noise_typ == 1:
+    #     row,col,ch = image.shape
+    #     s_vs_p = 0.5
+    #     amount = 0.04
+    #     out = np.copy(image)
+    #     # Salt mode
+    #     num_salt = np.ceil(amount * image.size * s_vs_p)
+    #     coords = [np.random.randint(0, i - 1, int(num_salt))
+    #             for i in image.shape]
+    #     out[coords] = 1
 
-        # Pepper mode
-        num_pepper = np.ceil(amount* image.size * (1. - s_vs_p))
-        coords = [np.random.randint(0, i - 1, int(num_pepper))
-                for i in image.shape]
-        out[coords] = 0
-        return out
+    #     # Pepper mode
+    #     num_pepper = np.ceil(amount* image.size * (1. - s_vs_p))
+    #     coords = [np.random.randint(0, i - 1, int(num_pepper))
+    #             for i in image.shape]
+    #     out[coords] = 0
+    #     return out
     elif noise_typ == 2:
         vals = len(np.unique(image))
         vals = 2 ** np.ceil(np.log2(vals))
@@ -151,17 +151,17 @@ def HalfToneImage(imageGray):
 
 def resize_randomly(image):
     h, w, c = image.shape
-    height = randint(14,28)
+    height = randint(18,32)
     new_width = int((height * w)/h)
     if new_width < 5 or height < 5:
         return image
     image = cv2.resize(image,(new_width,height))
     padding = randint(0,8)
     top = randint(0,2)
-    left = randint(0,2)
+    left = randint(0,4)
     bottom = randint(0,2)
-    right = randint(0,2)
-    if padding > 4:
+    right = randint(0,4)
+    if padding > 2:
         image = cv2.copyMakeBorder(image,top,bottom,left,right,cv2.BORDER_CONSTANT,value=(255,255,255))
 
     # do_thresh = randint(0,10)
@@ -193,7 +193,7 @@ def resize_randomly(image):
         #     image = cv2.bitwise_and(image,background_image)
 
     do_blur = randint(0,15)
-    if do_blur == 0 and height > 13:
+    if do_blur == 0 and height > 20:
         image = cv2.GaussianBlur(image,(3,3),0)
     # elif do_blur == 1:
     #     image = cv2.medianBlur(image,3)
@@ -215,19 +215,19 @@ def resize_randomly(image):
 
     # image = add_random_noise(image)
 
-    # do_morph = randint(0,8)
-    # operations = [cv2.MORPH_DILATE, cv2.MORPH_ERODE, cv2.MORPH_CLOSE]
-    # kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT,(3,1))
-    # kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT,(1,3))
-    # kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT,(2,2))
-    # kernels = [kernel1,kernel2, kernel3]
-    # kernel_no = randint(0,2)
-    # if do_morph < 2:
-    #     image = cv2.morphologyEx(image,operations[do_morph],kernels[kernel_no])
-    # if do_morph == 3:
-    #     image = cv2.morphologyEx(image,cv2.MORPH_CLOSE,kernel3)
+    do_morph = randint(0,8)
+    operations = [cv2.MORPH_DILATE, cv2.MORPH_ERODE, cv2.MORPH_CLOSE]
+    kernel1 = cv2.getStructuringElement(cv2.MORPH_RECT,(3,1))
+    kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT,(1,3))
+    kernel3 = cv2.getStructuringElement(cv2.MORPH_RECT,(2,2))
+    kernels = [kernel1,kernel2, kernel3]
+    kernel_no = randint(0,2)
+    if do_morph < 2:
+        image = cv2.morphologyEx(image,operations[do_morph],kernels[kernel_no])
+    if do_morph == 3:
+        image = cv2.morphologyEx(image,cv2.MORPH_CLOSE,kernel3)
     
-    rotate_image = randint(0,11)
+    rotate_image = randint(0,40)
     if rotate_image == 5:
         angle = randint(-2,2)
         image = cv2.bitwise_not(image)
@@ -269,17 +269,18 @@ def image_to_text(text_lines_eng_raw):
     shuffle(text_lines)
     font_db_id = 0
     for line in text_lines:
+        # break
         counter += 1
         # if counter == 50:
         #     break
 
-        add_rand_space = randint(0,15)
-        if add_rand_space == 8:
-            _times = randint(1,3)
-            space_counts = ['  ', '    ', '      ']
-            _space_c = randint(0,2)
-            line = line.replace(' ', space_counts[_space_c], _times)
-        for x in range(5):
+        # add_rand_space = randint(0,15)
+        # if add_rand_space == 8:
+        #     _times = randint(1,3)
+        #     space_counts = ['  ', '    ', '      ']
+        #     _space_c = randint(0,2)
+        #     line = line.replace(' ', space_counts[_space_c], _times)
+        for x in range(2):
             current_font_id = randint(0,len(font_database[font_db_id]) - 1)
             fm, monospace = font_database[font_db_id][current_font_id][0], font_database[font_db_id][current_font_id][1]
             _set_bold = randint(0,3)
@@ -296,11 +297,11 @@ def image_to_text(text_lines_eng_raw):
                 width, height = randint(50, 350), 32
                 line = ''
             pix = QPixmap(width,height)
-            _back_color = 255
+            _back_color = randint(170,255)
             pix.fill(QColor(_back_color,_back_color,_back_color))
             painter = QPainter(pix)
-            _from = randint(0,50)
-            _color = randint(_from,150)
+            _from = randint(0,20)
+            _color = _from
             if _color >= _back_color:
                 _color = 50
             painter.setBrush(QColor(_color,_color,_color))
@@ -339,13 +340,16 @@ def image_to_text(text_lines_eng_raw):
     # generated_images.extend(dataset_)
     # generated_images = read_dataset('datasets/dataset1')
     # generated_images.extend(dataset_)
-    # dataset_ = read_dataset('datasets/dataset3')
-    # generated_images.extend(dataset_)
-    # shuffle(generated_images)
-    # shuffle(generated_images)
+    dataset_ = read_dataset('Z_Long_Oct_14_clean_crop')
+    generated_images.extend(dataset_)
+    shuffle(generated_images)
+    shuffle(generated_images)
 
-    create_tfrecord_data(generated_images,'./train_data/training.tfrecords')
-    # create_tfrecord_data(generated_images, './train_data/testing_all.tfrecords')
+    # for i, value in enumerate(generated_images):
+    #     cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
+
+    create_tfrecord_data(generated_images,'./train_data/training_finetune_1.tfrecords')
+    # create_tfrecord_data(generated_images, './train_data/testing_gold.tfrecords')
 
 
     print('train data count : {} \n'.format(len(generated_images)))
@@ -409,25 +413,34 @@ def chop_line(line_text, max_length=36):
         _line.append(c)
     return line_segments
 
+def fix_image_h_w(image):
+    h, w = image.shape[:2]
+    new_width = int((28 * w)/h) + 1
+    np_arr = cv2.resize(image,(new_width,28))
+    np_arr = cv2.copyMakeBorder(np_arr,2,2,4,4,cv2.BORDER_CONSTANT,value=(255, 255, 255))
+    return np_arr
 
 def read_dataset(folder, separator=':', annot_file='annot.txt'):
     lines = []
     with open('{}/{}'.format(folder,annot_file), 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
+    print('total lines in folder {} : {}'.format(folder,len(lines)))
     generated_data = []
     for line in lines:
         line = line.replace('\n', '')
-        data = line.split(separator)
+        data = line.split(separator,maxsplit=1)
         if len(data) >= 2:
             image_base_name = data[0]
-            _line_text = separator.join(data[1:])
+            _line_text = data[1]
+            
             img_file = '{}/{}.jpg'.format(folder,image_base_name)
             try:
                 image = cv2.imread(img_file)
+                image = fix_image_h_w(image)
+                # print(img_file, _line_text)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-                # print(img_file, _line_text)
                 h,w = image.shape[:2]
                 if w <= 350 and len(_line_text) <= 36 and len(_line_text) > 3:
                     generated_data.append([image,_line_text])
