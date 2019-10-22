@@ -269,7 +269,7 @@ def image_to_text(text_lines_eng_raw):
     shuffle(text_lines)
     font_db_id = 0
     for line in text_lines:
-        # break
+        break
         counter += 1
         # if counter == 50:
         #     break
@@ -340,16 +340,16 @@ def image_to_text(text_lines_eng_raw):
     # generated_images.extend(dataset_)
     # generated_images = read_dataset('datasets/dataset1')
     # generated_images.extend(dataset_)
-    dataset_ = read_dataset('Z_Long_Oct_14_clean_crop')
+    dataset_ = read_dataset('croped_gold_poi_without_gov')
     generated_images.extend(dataset_)
-    shuffle(generated_images)
-    shuffle(generated_images)
+    # shuffle(generated_images)
+    # shuffle(generated_images)
 
     # for i, value in enumerate(generated_images):
     #     cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
 
-    create_tfrecord_data(generated_images,'./train_data/training_finetune_1.tfrecords')
-    # create_tfrecord_data(generated_images, './train_data/testing_gold.tfrecords')
+    # create_tfrecord_data(generated_images,'./train_data/training_finetune_1.tfrecords')
+    create_tfrecord_data(generated_images, './train_data/testing_gold_without_gov.tfrecords')
 
 
     print('train data count : {} \n'.format(len(generated_images)))

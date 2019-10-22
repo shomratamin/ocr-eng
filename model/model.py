@@ -324,7 +324,7 @@ class Model(object):
                     incorrect = float(incorrect) / len(ground)
                 incorrect = min(1, incorrect)
             else:
-                incorrect = 0 if output == ground else 1
+                incorrect = 0 if output.lower() == ground.lower() else 1
 
             num_correct += 1. - incorrect
 
@@ -363,6 +363,8 @@ class Model(object):
                              result['loss'],
                              math.exp(result['loss']) if result['loss'] < 300 else float('inf'),
                              probability))
+            logging.info('Step {} predict: {}'.format(current_step,output))
+            logging.info('Step {} original: {}'.format(current_step,ground))
 
     def train(self, data_path, num_epoch):
         logging.info('num_epoch: %d', num_epoch)
