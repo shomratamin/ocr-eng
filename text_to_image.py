@@ -7,6 +7,7 @@ import cv2
 import copy
 import time
 from glob import glob
+import csv
 
 from random import shuffle, randint
 
@@ -340,7 +341,7 @@ def image_to_text(text_lines_eng_raw):
     # generated_images.extend(dataset_)
     # generated_images = read_dataset('datasets/dataset1')
     # generated_images.extend(dataset_)
-    dataset_ = read_dataset('croped_gold_poi_without_gov')
+    dataset_ = read_dataset('new_set_AOCR_test_396')
     generated_images.extend(dataset_)
     # shuffle(generated_images)
     # shuffle(generated_images)
@@ -349,7 +350,7 @@ def image_to_text(text_lines_eng_raw):
     #     cv2.imwrite('./test_data/'+ str(i) + '.jpg', value[0])
 
     # create_tfrecord_data(generated_images,'./train_data/training_finetune_1.tfrecords')
-    create_tfrecord_data(generated_images, './train_data/testing_gold_without_gov.tfrecords')
+    create_tfrecord_data(generated_images, './train_data/new_set_AOCR_test_396_prep.tfrecords')
 
 
     print('train data count : {} \n'.format(len(generated_images)))
@@ -420,34 +421,31 @@ def fix_image_h_w(image):
     np_arr = cv2.copyMakeBorder(np_arr,2,2,4,4,cv2.BORDER_CONSTANT,value=(255, 255, 255))
     return np_arr
 
-def read_dataset(folder, separator=':', annot_file='annot.txt'):
-    lines = []
-    with open('{}/{}'.format(folder,annot_file), 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+def read_dataset(folder, separator=',', annot_file='annot.txt'):
 
-    print('total lines in folder {} : {}'.format(folder,len(lines)))
+    # print('total lines in folder {} : {}'.format(folder,len(lines)))
     generated_data = []
-    for line in lines:
-        line = line.replace('\n', '')
-        data = line.split(separator,maxsplit=1)
-        if len(data) >= 2:
-            image_base_name = data[0]
-            _line_text = data[1]
-            
-            img_file = '{}/{}.jpg'.format(folder,image_base_name)
-            try:
-                image = cv2.imread(img_file)
-                image = fix_image_h_w(image)
-                # print(img_file, _line_text)
-                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-                h,w = image.shape[:2]
-                if w <= 350 and len(_line_text) <= 36 and len(_line_text) > 3:
-                    generated_data.append([image,_line_text])
-                    if len(_line_text) > 36:
-                        print(line)
-            except:
-                continue
+    with open('{}/{}'.format(folder,annot_file), 'r', encoding='utf-8') as f:
+        lines = csv.reader(f, delimiter=',', quotechar='"')
+        for data in lines:
+            if len(data) >= 2:
+                image_base_name = data[0]
+                _line_text = data[1]
+                
+                img_file = '{}/{}'.format(folder,image_base_name)
+                try:
+                    image = cv2.imread(img_file)
+                    # image = fix_image_h_w(image)
+                    # print(img_file, _line_text)
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                    image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+                    h,w = image.shape[:2]
+                    if w <= 350 and len(_line_text) <= 36 and len(_line_text) > 3:
+                        generated_data.append([image,_line_text])
+                        if len(_line_text) > 36:
+                            print(data[1])
+                except:
+                    continue
 
     return generated_data
 

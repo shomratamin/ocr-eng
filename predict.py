@@ -32,6 +32,7 @@ def get_model_api():
 
     input = graph.get_tensor_by_name('prefix/input_image_as_bytes:0')
     prediction = graph.get_tensor_by_name('prefix/prediction:0')
+    confidence = graph.get_tensor_by_name('prefix/probability:0')
 
     session_conf = tf.ConfigProto(
         device_count={'GPU' : 1},
@@ -45,9 +46,9 @@ def get_model_api():
     tfgraph = tf.get_default_graph()
     def model_api(image):
         image_string = cv2.imencode('.jpg',image)[1].tostring()
-        out = sess.run(prediction, feed_dict={
+        out, confidence_out = sess.run([prediction,confidence], feed_dict={
             input: [image_string]
         })
         result = out.decode('utf-8')
-        return result
+        return result, confidence_out * 100.0
     return model_api

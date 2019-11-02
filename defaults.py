@@ -45,7 +45,7 @@ class Config(object):
     MAX_HEIGHT = 32
     MAX_PREDICTION = 36
 
-    USE_DISTANCE = False
+    USE_DISTANCE = True
 
     # Dataset generation
     LOG_STEP = 500
