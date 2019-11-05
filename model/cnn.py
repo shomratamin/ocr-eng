@@ -101,7 +101,7 @@ def ConvReluBN(incoming, num_filters, filter_size, name, is_training):
         return tf.nn.relu(after_bn)
 
 
-def dropout(incoming, is_training, keep_prob=0.7):
+def dropout(incoming, is_training, keep_prob=0.5):
     return tf.contrib.layers.dropout(incoming, keep_prob=keep_prob, is_training=is_training)
 
 
